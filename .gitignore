@@ -39,13 +39,13 @@ ENV/
 *~
 .DS_Store
 
-# Dataset (too large for GitHub - users should provide their own)
-dataset/
-*.tif
-*.jpg
-*.png
-*.jpeg
-*.tiff
+# Dataset - keeping it for GitHub
+# dataset/
+# *.tif
+# *.jpg
+# *.png
+# *.jpeg
+# *.tiff
 
 # Model checkpoints (too large)
 saved_models/
