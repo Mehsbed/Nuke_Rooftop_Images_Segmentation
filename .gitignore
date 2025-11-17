@@ -39,13 +39,13 @@ ENV/
 *~
 .DS_Store
 
-# Dataset (large files - use Git LFS if needed)
-dataset/
-*.tif
+# Dataset (large files - using Git LFS)
+# dataset/  # Commented out to allow dataset in repository with Git LFS
+# *.tif     # Commented out - handled by Git LFS via .gitattributes
+# *.tiff    # Commented out - handled by Git LFS via .gitattributes
 *.jpg
 *.png
 *.jpeg
-*.tiff
 
 # Model checkpoints (too large for git)
 saved_models/
