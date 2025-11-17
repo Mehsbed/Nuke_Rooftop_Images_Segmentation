@@ -44,44 +44,43 @@ A deep learning project for semantic segmentation of rooftops in aerial/satellit
 
 ## 🎯 Overview
 
-This project implements a state-of-the-art semantic segmentation model to detect and segment rooftops in aerial/satellite images. The model uses DeepLabV3Plus with a pretrained ResNet50 backbone and includes various optimizations for efficient training and better performance.
+This project is for semantic segmentation of rooftops in aerial/satellite images. I'm using DeepLabV3Plus with ResNet50 as the backbone, which I've pretrained on ImageNet. I've added some optimizations to make training faster and get better results.
 
-**Key Highlights:**
-- ✅ Semantic segmentation (pixel-wise classification)
-- ✅ Pretrained ResNet50 encoder for transfer learning
-- ✅ Mixed precision training for faster training
-- ✅ Combined loss function (CrossEntropy + Dice Loss)
-- ✅ Learning rate scheduling
-- ✅ GPU acceleration support
-- ✅ Comprehensive evaluation metrics (IoU, Pixel Accuracy)
+**What's included:**
+- Semantic segmentation (classifying each pixel)
+- ResNet50 encoder pretrained on ImageNet
+- Mixed precision training (makes it faster)
+- Combined loss function (CrossEntropy + Dice Loss)
+- Learning rate scheduling
+- GPU support
+- Metrics: IoU and Pixel Accuracy
 
 ## ✨ Features
 
 ### Model Features
-- **DeepLabV3Plus Architecture**: State-of-the-art segmentation model
-- **Pretrained Backbone**: ResNet50 encoder pretrained on ImageNet
-- **Transfer Learning**: Leverages pretrained weights for better performance
+- DeepLabV3Plus architecture
+- ResNet50 pretrained on ImageNet
+- Uses transfer learning
 
 ### Training Features
-- **Mixed Precision Training**: 2x faster training with FP16
-- **Combined Loss Function**: CrossEntropy (60%) + Dice Loss (40%)
-- **Learning Rate Scheduling**: Automatic LR reduction on plateau
-- **Gradient Clipping**: Prevents gradient explosion
-- **Early Stopping**: Stops training when validation metrics plateau
-- **Model Checkpointing**: Saves best models based on IoU and Loss
+- Mixed precision training (FP16) - about 2x faster
+- Loss function combines CrossEntropy (60%) and Dice Loss (40%)
+- Learning rate automatically reduces when validation loss stops improving
+- Gradient clipping to prevent training issues
+- Early stopping after 10 epochs without improvement
+- Saves best models based on IoU and loss
 
 ### Evaluation Features
-- **Pixel Accuracy (PA)**: Percentage of correctly classified pixels
-- **Mean Intersection over Union (mIoU)**: Better metric for segmentation
-- **Learning Curves Visualization**: Track training progress
-- **Inference Visualization**: Side-by-side comparison of predictions
+- Pixel Accuracy - percentage of correct pixels
+- mIoU (mean IoU) - better metric for segmentation tasks
+- Plots learning curves
+- Shows side-by-side comparison of predictions vs ground truth
 
 ## 📦 Requirements
 
-### Python Version
 - Python 3.7 or higher
 
-### Core Libraries
+### Required Libraries
 ```
 torch>=1.8.0
 torchvision>=0.9.0
@@ -95,10 +94,10 @@ tqdm>=4.60.0
 ```
 
 ### Hardware
-- **GPU**: NVIDIA GPU with CUDA support (recommended)
-- **CPU**: Can run on CPU but significantly slower
-- **Memory**: Minimum 8GB RAM, 16GB+ recommended
-- **Storage**: Space for dataset and saved models
+- GPU with CUDA support recommended (much faster)
+- Can run on CPU but will be slow
+- At least 8GB RAM (16GB+ is better)
+- Enough storage for your dataset and saved models
 
 ## 🚀 Installation
 
@@ -151,12 +150,12 @@ dataset/
         └── ...
 ```
 
-**Dataset Requirements:**
-- Images should be in RGB format (.tif, .jpg, .png, etc.)
-- Labels should be grayscale masks (.tif, .png, etc.)
-- Label files should follow naming: `{image_name}_label.tif`
-- Labels should have pixel values: 0 (background), 255 (rooftop)
-- Recommended image size: 256×256 pixels (will be resized automatically)
+**Requirements:**
+- Images in RGB format (.tif, .jpg, .png work fine)
+- Labels as grayscale masks
+- Label naming: `{image_name}_label.tif`
+- Label values: 0 for background, 255 for rooftop
+- Images will be resized to 256x256 automatically
 
 ## 💻 Usage
 
@@ -200,21 +199,21 @@ gradient_clip = 1.0                        # Gradient clipping threshold
 
 ### Training
 
-The training process will:
-1. Load and preprocess the dataset
-2. Split into train/validation/test sets
-3. Initialize the model with pretrained weights
-4. Train with mixed precision
-5. Validate after each epoch
-6. Save best models based on IoU and Loss
-7. Display progress and metrics
+When you run the training:
+1. Loads and preprocesses the dataset
+2. Splits into train/val/test sets (90/5/5 by default)
+3. Sets up model with pretrained ResNet50 weights
+4. Trains using mixed precision
+5. Validates after each epoch
+6. Saves best models (based on IoU and loss)
+7. Shows progress and metrics
 
 ### Inference
 
-After training, the inference cell will:
-1. Load the best trained model
-2. Run predictions on test set
-3. Visualize results side-by-side (Original, Ground Truth, Prediction)
+After training:
+1. Loads the best model
+2. Runs predictions on test set
+3. Shows side-by-side: Original image, Ground Truth, Prediction
 
 ## 📂 Project Structure
 
@@ -235,75 +234,62 @@ projects/
 
 ## 🏗️ Model Architecture
 
-### DeepLabV3Plus
+Using DeepLabV3Plus which has:
+- Encoder: ResNet50 for feature extraction
+- ASPP: Multi-scale feature extraction
+- Decoder: Upsamples to get full resolution segmentation
 
-DeepLabV3Plus is a state-of-the-art semantic segmentation architecture that combines:
-- **Encoder**: ResNet50 backbone for feature extraction
-- **Atrous Spatial Pyramid Pooling (ASPP)**: Multi-scale feature extraction
-- **Decoder**: Upsampling path for high-resolution segmentation
-
-**Architecture Components:**
-- **Input**: 3-channel RGB images (256×256)
-- **Encoder**: ResNet50 (pretrained on ImageNet)
-- **ASPP**: Captures multi-scale context
-- **Decoder**: Refines segmentation boundaries
-- **Output**: 2-channel logits (background, rooftop)
-
-**Total Parameters**: ~40M (with ResNet50)
+Input is 256x256 RGB images, output is 2 classes (background and rooftop).
+Model has around 40M parameters with ResNet50.
 
 ## 🎓 Training Details
 
 ### Loss Function
 
-**CombinedLoss = 0.6 × CrossEntropy + 0.4 × Dice Loss**
-
-- **CrossEntropy Loss**: Standard classification loss
-- **Dice Loss**: Better for segmentation, handles class imbalance
-- **Combined**: Gets benefits of both losses
+Combined loss: 60% CrossEntropy + 40% Dice Loss
+- CrossEntropy is the standard classification loss
+- Dice Loss works better for segmentation, especially with imbalanced classes
+- Combining both gives good results
 
 ### Optimizer
 
-**AdamW** with:
-- Learning Rate: 1e-3
-- Weight Decay: 1e-4
-- Adaptive learning rates per parameter
+Using AdamW optimizer:
+- Learning rate: 0.001
+- Weight decay: 0.0001
 
 ### Learning Rate Scheduling
 
-**ReduceLROnPlateau**:
-- Monitors validation loss
-- Reduces LR by factor of 0.5 when loss plateaus
-- Patience: 5 epochs
-- Minimum LR: 1e-6
+ReduceLROnPlateau scheduler:
+- Watches validation loss
+- If loss doesn't improve for 5 epochs, reduces LR by half
+- Minimum LR is 1e-6
 
 ### Mixed Precision Training
 
-Uses **FP16** (half precision) for:
-- 2x faster training
-- 50% less GPU memory
-- Minimal accuracy loss
+Using FP16 (half precision):
+- Makes training about 2x faster
+- Uses less GPU memory
+- Accuracy stays almost the same
 
 ### Training Optimizations
 
-- **Gradient Clipping**: Prevents gradient explosion (max norm: 1.0)
-- **Non-blocking Transfers**: Faster GPU data transfer
-- **Early Stopping**: Stops if no improvement for 10 epochs
-- **Model Checkpointing**: Saves best models based on IoU and Loss
+- Gradient clipping (max norm 1.0) to prevent gradient explosion
+- Non-blocking GPU transfers for speed
+- Early stopping after 10 epochs without improvement
+- Saves best models based on IoU and loss
 
 ## 📊 Results
 
 ### Metrics Explained
 
 1. **Pixel Accuracy (PA)**
-   - Percentage of correctly classified pixels
-   - Formula: `Correct Pixels / Total Pixels`
-   - Range: 0 to 1 (higher is better)
+   - Percentage of pixels classified correctly
+   - Higher is better (0 to 1)
 
-2. **Mean Intersection over Union (mIoU)**
-   - Better metric for segmentation
-   - Measures overlap between prediction and ground truth
-   - Formula: `IoU = Intersection / Union`
-   - Range: 0 to 1 (higher is better)
+2. **Mean IoU (mIoU)**
+   - Better metric for segmentation than pixel accuracy
+   - Measures how much prediction and ground truth overlap
+   - Higher is better (0 to 1)
 
 3. **Loss**
    - Combined loss value
@@ -311,38 +297,22 @@ Uses **FP16** (half precision) for:
 
 ### Expected Performance
 
-With the default configuration:
-- **Training Time**: ~2-3 hours (on GPU)
-- **mIoU**: 0.70-0.85 (depends on dataset quality)
-- **Pixel Accuracy**: 0.90-0.95
+With default settings (GPU):
+- Training time: around 2-3 hours
+- mIoU: usually 0.70-0.85 (depends on your dataset)
+- Pixel Accuracy: usually 0.90-0.95
 
-### Visualizing Results
+The notebook plots learning curves and shows inference results visually.
 
-The notebook includes:
-- **Learning Curves**: Track training progress over epochs
-- **Inference Results**: Visual comparison of predictions vs ground truth
+## 🔑 Why These Choices?
 
-## 🔑 Key Features Explained
+**Pretrained Backbone**: ResNet50 already learned useful features from ImageNet, so I reuse those and just learn the segmentation part. Much faster and better results.
 
-### Why Pretrained Backbone?
-- ResNet50 learned useful features on ImageNet (edges, textures, shapes)
-- Transfer learning: Reuse features, only learn segmentation-specific parts
-- Faster convergence and better results
+**Combined Loss**: CrossEntropy is good for classification, Dice Loss is better for segmentation especially with imbalanced classes. Using both works well.
 
-### Why Combined Loss?
-- CrossEntropy: Good for classification
-- Dice Loss: Better for segmentation with class imbalance
-- Combined: Gets benefits of both
+**Mixed Precision**: Using FP16 instead of FP32 makes training 2x faster and uses half the GPU memory with almost no accuracy loss.
 
-### Why Mixed Precision?
-- Uses 16-bit floats instead of 32-bit
-- 2x faster training
-- 50% less GPU memory
-
-### Why IoU Metric?
-- Pixel Accuracy can be misleading (e.g., most pixels are background)
-- IoU measures overlap, better for segmentation evaluation
-- Handles class imbalance better
+**IoU Metric**: Pixel accuracy can be misleading (like if most pixels are background). IoU measures actual overlap which is better for segmentation tasks.
 
 ## 🤝 Contributing
 
@@ -366,7 +336,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📧 Contact
 
-For questions or issues, please open an issue on GitHub.
+If you have questions or run into issues, feel free to open an issue on GitHub.
 
 ---
 
@@ -397,7 +367,7 @@ For questions or issues, please open an issue on GitHub.
 
 ---
 
-**Note**: This project is for educational purposes as part of the EduNet internship program. Make sure you have proper permissions and licenses for any datasets you use.
+**Note**: This is part of my EduNet internship project. Make sure you have the right permissions for any datasets you use.
 
-**Happy Coding! 🚀**
+Thanks for checking it out! 🚀
 
