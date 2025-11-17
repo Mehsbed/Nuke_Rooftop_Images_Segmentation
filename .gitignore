@@ -28,7 +28,7 @@ ENV/
 .venv
 
 # Jupyter Notebook
-.ipynb_checkpoints
+.ipynb_checkpoints/
 *.ipynb_checkpoints/
 
 # IDE
@@ -39,15 +39,15 @@ ENV/
 *~
 .DS_Store
 
-# Dataset - keeping it for GitHub
-# dataset/
-# *.tif
-# *.jpg
-# *.png
-# *.jpeg
-# *.tiff
+# Dataset (large files - use Git LFS if needed)
+dataset/
+*.tif
+*.jpg
+*.png
+*.jpeg
+*.tiff
 
-# Model checkpoints (too large)
+# Model checkpoints (too large for git)
 saved_models/
 *.pt
 *.pth
@@ -68,6 +68,7 @@ Thumbs.db
 *.tmp
 *.temp
 .cache/
+test_code.py
 
 # Environment variables
 .env
@@ -76,7 +77,8 @@ Thumbs.db
 # Data files
 data/
 *.csv
-*.json
+# Note: *.json excluded to avoid excluding .ipynb files (which are JSON)
+# Add specific JSON data files if needed: data/*.json
 *.h5
 *.hdf5
 
